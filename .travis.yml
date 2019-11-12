@@ -1,0 +1,70 @@
+
+
+
+
+
+
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Consolas; color: #000087}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Consolas; color: #5f5f00; min-height: 12.0px}
+span.s1 {color: #00005f}
+span.s2 {color: #5f5f00}
+span.s3 {color: #005f00}
+span.s4 {text-decoration: underline}
+
+
+
+sudo: required
+
+
+
+services:
+
+
+  - docker
+
+
+
+env:
+
+
+  DOCKER_COMPOSE_VERSION: 1.14.0
+
+
+
+before_install:
+
+
+  - sudo rm /usr/local/bin/docker-compose
+
+
+  - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
+
+
+  - chmod +x docker-compose
+
+
+  - sudo mv docker-compose /usr/local/bin
+
+
+
+before_script:
+
+
+  - docker-compose -f docker-compose.yml up --build -d
+
+
+
+script:
+
+
+  - docker-compose -f docker-compose.yml run users-service python manage.py test
+
+
+  - docker-compose -f docker-compose.yml run users-service flake8 project
+
+
+
+after_script:
+
+
+  - docker-compose -f docker-compose.yml down
